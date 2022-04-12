@@ -294,6 +294,67 @@ namespace Streamish.Repositories
             }
         }
 
+        public List<Video> SearchAll(string titleq, string descriptionq, DateTime? dateq, int? userq, bool sortDescending)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    var sql = @"
+              SELECT v.Id  AS VideoId, v.Title, v.Description, v.Url, v.DateCreated AS VideoDateCreated, v.UserProfileId AS VideoUserProfileId,
+
+                     up.Name, up.Email, up.DateCreated AS UserProfileDateCreated,
+                     up.ImageUrl AS UserProfileImageUrl
+                        
+                FROM Video v 
+                     JOIN UserProfile up ON v.UserProfileId = up.Id
+               WHERE";
+
+                    sql += titleq == null ? "" : " v.Title LIKE @titleq AND ";
+                    sql += descriptionq == null ? "" : " v.Description LIKE @descriptionq AND ";
+                    sql += dateq == null ? "" : " v.DateCreated > @dateq AND ";
+                    sql += userq == null ? "" : " v.UserProfileId = @userq ";
+
+                    if (userq == null && sql.EndsWith("AND "))
+                    {
+                        sql = sql.Substring(0, sql.LastIndexOf(" AND")) + " ";
+                    }
+
+                    if (sortDescending)
+                    {
+                        sql += " ORDER BY v.DateCreated DESC";
+                    }
+                    else
+                    {
+                        sql += " ORDER BY v.DateCreated";
+                    }
+
+                    cmd.CommandText = sql;
+
+                    if (titleq != null) DbUtils.AddParameter(cmd, "@titleq", $"%{titleq}%");
+
+                    if(descriptionq != null) DbUtils.AddParameter(cmd, "@descriptionq", $"%{descriptionq}%");
+
+                    if (dateq != null) DbUtils.AddParameter(cmd, "@dateq", dateq);
+
+                    if (userq != null) DbUtils.AddParameter(cmd, "@userq", userq);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+
+                        var videos = new List<Video>();
+                        while (reader.Read())
+                        {
+                            videos.Add(MakeNewVideoFromReader(reader));
+                        }
+
+                        return videos;
+                    }
+                }
+            }
+        }
+
         public List<Video> Hottest(DateTime since)
         {
             using (var conn = Connection)
