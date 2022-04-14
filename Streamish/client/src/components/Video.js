@@ -6,7 +6,7 @@ const Video = ({ video }) => {
     return (
         <Card>
             <p className="text-left px-2">
-                Posted by: {video.userProfile.name}
+                Posted by: {video.userProfile?.name}
             </p>
             <CardBody>
                 <iframe
