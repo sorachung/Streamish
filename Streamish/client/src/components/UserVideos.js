@@ -22,6 +22,7 @@ const UserVideos = () => {
             for (const video of videosFromUser) {
                 video.userProfile = {};
                 video.userProfile.name = user.name;
+                video.userProfile.id = user.id;
             }
             setVideos(videosFromUser);
         }

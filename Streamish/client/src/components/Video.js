@@ -6,7 +6,9 @@ const Video = ({ video }) => {
     return (
         <Card>
             <p className="text-left px-2">
-                Posted by: {video.userProfile?.name}
+                <Link to={`/users/${video.userProfile.id}`}>
+                    <strong>Posted by: {video.userProfile?.name}</strong>
+                </Link>
             </p>
             <CardBody>
                 <iframe
