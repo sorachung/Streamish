@@ -5,6 +5,7 @@ export const getAllVideos = () => {
 };
 
 export const addVideo = (video) => {
+    video.userProfileId = 1;
     return fetch(baseUrl, {
         method: "POST",
         headers: {
@@ -16,4 +17,8 @@ export const addVideo = (video) => {
 
 export const searchVideo = (searchTerm) => {
     return fetch(`${baseUrl}/search?q=${searchTerm}`).then((res) => res.json());
+};
+
+export const getVideo = (id) => {
+    return fetch(`${baseUrl}/getwithcomments/${id}`).then((res) => res.json());
 };
