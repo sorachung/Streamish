@@ -15,22 +15,18 @@ const VideoList = () => {
     }, []);
 
     return (
-        <>
-            <VideosSearch
-                videos={videos}
-                setVideos={setVideos}
-                getVideos={getVideos}
-            />
-            <div className="container">
-                <div className="row justify-content-center">
-                    {videos.map((video) => (
-                        <>
-                            <Video video={video} key={video.id} />
-                        </>
-                    ))}
-                </div>
+        <div className="container">
+            <div className="row justify-content-center">
+                <VideosSearch
+                    videos={videos}
+                    setVideos={setVideos}
+                    getVideos={getVideos}
+                />
+                {videos.map((video) => (
+                    <Video video={video} key={video.id} />
+                ))}
             </div>
-        </>
+        </div>
     );
 };
 

@@ -26,12 +26,6 @@ const Video = ({ video }) => {
                     </Link>
                 </p>
                 <p>{video.description}</p>
-                {video.comments.map((comment) => (
-                    <>
-                        <p>From: {comment.userProfileId}</p>
-                        <p>Comment: {comment.message}</p>
-                    </>
-                ))}
             </CardBody>
         </Card>
     );
