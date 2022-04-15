@@ -2,30 +2,44 @@
 using Microsoft.AspNetCore.Mvc;
 using Streamish.Repositories;
 using Streamish.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Streamish.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserProfileController : ControllerBase
     {
-        private readonly IUserProfileRepository _userProfilerepository;
+        private readonly IUserProfileRepository _userProfileRepository;
 
         public UserProfileController(IUserProfileRepository userProfileRepository)
         {
-            _userProfilerepository = userProfileRepository;
+            _userProfileRepository = userProfileRepository;
+        }
+
+        [HttpGet("DoesUserExist/{firebaseUserId}")]
+        public IActionResult DoesUserExist(string firebaseUserId)
+        {
+            var userProfile = _userProfileRepository.GetByFirebaseUserId(firebaseUserId);
+            if (userProfile == null)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_userProfilerepository.GetAll());
+            return Ok(_userProfileRepository.GetAll());
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var user = _userProfilerepository.GetById(id);
+            var user = _userProfileRepository.GetById(id);
             if (user == null)
             {
                 return NotFound();
@@ -36,7 +50,7 @@ namespace Streamish.Controllers
         [HttpGet("GetWithVideos/{id}")]
         public IActionResult GetWithVideos(int id)
         {
-            var user = _userProfilerepository.GetByIdWithVideos(id);
+            var user = _userProfileRepository.GetByIdWithVideos(id);
             if (user == null)
             {
                 return NotFound();
@@ -47,7 +61,7 @@ namespace Streamish.Controllers
         [HttpPost]
         public IActionResult Post(UserProfile user)
         {
-            _userProfilerepository.Add(user);
+            _userProfileRepository.Add(user);
             return CreatedAtAction("Get", new { id = user.Id }, user);
         }
 
@@ -59,15 +73,21 @@ namespace Streamish.Controllers
                 return BadRequest();
             }
 
-            _userProfilerepository.Update(user);
+            _userProfileRepository.Update(user);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _userProfilerepository.Delete(id);
+            _userProfileRepository.Delete(id);
             return NoContent();
+        }
+
+        private UserProfile GetCurrentUserProfile()
+        {
+            var firebaseUserId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return _userProfileRepository.GetByFirebaseUserId(firebaseUserId);
         }
     }
 }
