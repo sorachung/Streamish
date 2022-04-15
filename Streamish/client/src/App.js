@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
+import { Spinner } from "reactstrap";
 import "./App.css";
 import ApplicationViews from "./components/ApplicationViews";
 import Header from "./components/Header";
@@ -11,6 +12,11 @@ function App() {
     useEffect(() => {
         onLoginStatusChange(setIsLoggedIn);
     }, []);
+
+    if (isLoggedIn === null) {
+        // Until we know whether or not the user is logged in or not, just show a spinner
+        return <Spinner className="app-spinner dark" />;
+    }
 
     return (
         <div className="App">

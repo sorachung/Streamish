@@ -61,6 +61,7 @@ namespace Streamish.Controllers
         [HttpPost]
         public IActionResult Post(UserProfile user)
         {
+            user.DateCreated = DateTime.Now;
             _userProfileRepository.Add(user);
             return CreatedAtAction("Get", new { id = user.Id }, user);
         }
